@@ -1,0 +1,4 @@
+= Fmeta
+
+Currently, a simple wrapper around exiftool (http://www.sno.phy.queensu.ca/~phil/exiftool/install.html).
+Planned upgrades include metadata editing facilities for Audio and Video files.
