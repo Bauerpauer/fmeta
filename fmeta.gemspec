@@ -18,14 +18,5 @@ Gem::Specification.new do |s|
   s.version = GEM_VERSION
   s.platform = Gem::Platform::RUBY
   s.require_path = 'lib'
-  # s.files = %w(Rakefile) + Dir.glob("lib/**/*")
   s.files = `git ls-files`.split("\n")
-  
-  # s.name = 'newsroom'
-  # s.summary = s.description = 'Wieck Newsroom'
-  # s.author = 'Wieck Media'
-  # s.homepage = 'http://wiecklabs.com'
-  # s.email = 'dev@wieck.com'
-  # s.version = NEWSROOM_VERSION
-  # s.platform = Gem::Platform::RUBY
 end
