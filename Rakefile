@@ -21,7 +21,7 @@ rescue LoadError
   task(:gem) { $stderr.puts 'failed to load rake/gempackagetask' }
 end
 
-desc 'install newsroom'
+desc 'install fmeta'
 task :install => :package do
   sh %{gem install pkg/#{gemspec.full_name}}
 end
