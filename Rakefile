@@ -1,8 +1,35 @@
 require "rubygems"
-require "pathname"
 require "rake"
 require "rake/rdoctask"
 require "rake/testtask"
+
+# Gem
+def gemspec
+  @gemspec ||= begin
+    file = File.expand_path('../fmeta.gemspec', __FILE__)
+    eval(File.read(file), binding, file)
+  end
+end
+
+begin
+  require 'rake/gempackagetask'
+
+  Rake::GemPackageTask.new(gemspec) do |pkg|
+    pkg.gem_spec = gemspec
+  end
+rescue LoadError
+  task(:gem) { $stderr.puts 'failed to load rake/gempackagetask' }
+end
+
+desc 'install newsroom'
+task :install => :package do
+  sh %{gem install pkg/#{gemspec.full_name}}
+end
+
+desc 'validate gemspec'
+task :gemspec do
+  gemspec.validate
+end
 
 # Tests
 task :default => [:test]
@@ -17,33 +44,4 @@ task :rdoc do
   sh <<-EOS.strip
 rdoc -T fmeta#{" --op " + ENV["OUTPUT_DIRECTORY"] if ENV["OUTPUT_DIRECTORY"]} --line-numbers --main README --title "Fmeta Documentation" --exclude lib/fmeta.rb lib/fmeta README
   EOS
-end
-
-# Gem
-require "lib/fmeta/version"
-require "rake/gempackagetask"
-
-NAME = "fmeta"
-SUMMARY = "Fmeta File Metadata"
-GEM_VERSION = Fmeta::VERSION
-
-spec = Gem::Specification.new do |s|
-  s.name = NAME
-  s.summary = s.description = SUMMARY
-  s.author = "Scott Bauer"
-  s.homepage = "http://bauerpauer.com"
-  s.email = "bauer.mail@gmail.com"
-  s.version = GEM_VERSION
-  s.platform = Gem::Platform::RUBY
-  s.require_path = 'lib'
-  s.files = %w(Rakefile) + Dir.glob("lib/**/*")
-end
-
-Rake::GemPackageTask.new(spec) do |pkg|
-  pkg.gem_spec = spec
-end
-
-desc "Install Fmeta as a gem"
-task :install => [:repackage] do
-  sh %{gem install pkg/#{NAME}-#{GEM_VERSION}}
 end

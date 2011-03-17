@@ -70,7 +70,7 @@ class Fmeta::Image
     ##
     class Reader
 
-      EXIFTOOL_COMMAND = %q{exiftool -q -q -s -t -G}
+      EXIFTOOL_COMMAND = %q{exiftool -a -q -q -s -t -G}
       DATE_FORMAT_REGEXP = /^((\d{4}):(\d\d):(\d\d) (\d\d):(\d\d):(\d\d))($|(\+|\-)\d\d:\d\d)/
   
       def initialize(path)
