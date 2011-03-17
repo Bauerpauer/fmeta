@@ -26,7 +26,20 @@ module Fmeta
         end
       end
     end
-    
+
+    ##
+    # Updates the metadata from data stored in an object, using a map consisting of object
+    # attributes that point to an array of corresponding IPTC fields to be updated
+    ##
+    def update(object, attribute_to_iptc_map)
+      attribute_to_iptc_map.each do |attribute, iptc_field_keys|
+        value = object.send(attribute)
+        iptc_field_keys.each do |iptc_field_key|
+          self[iptc_field_key] = value
+        end
+      end
+    end
+
     def [](key)
       load_all_tags
 
