@@ -26,7 +26,7 @@ class Fmeta::Image::Tag
   end
 
   def value=(new_value)
-    @previous_value = @value.dup
+    @previous_value = @value ? @value.dup : nil
     @dirty = true
     @value = new_value
   end
