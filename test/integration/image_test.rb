@@ -3,7 +3,7 @@ require "fileutils"
 require Pathname(__FILE__).dirname.parent + "helper"
 
 class ImageTest < Test::Unit::TestCase
-  
+
   def test_reading_data_without_category
     meta = Fmeta::Image.new(SAMPLE_PATH)
 
@@ -31,13 +31,13 @@ class ImageTest < Test::Unit::TestCase
     assert_equal(nil, meta['EXIF:MetadataDate'])
     assert_equal(nil, meta['EXIF:Caption-Abstract'])
   end
-  
+
   def test_writing_data_without_category
     tempfile = Tempfile.new('fmeta')
     FileUtils.cp(SAMPLE_PATH, tempfile.path)
     metadata_date = DateTime.now
-    
-    # Write new metadata 
+
+    # Write new metadata
     meta = Fmeta::Image.new(tempfile.path)
     meta['AuthorsPosition'] = "Director of Smiley Design"
     meta['MetadataDate'] = metadata_date
@@ -47,7 +47,7 @@ class ImageTest < Test::Unit::TestCase
 
     # Ensure that the changes were persisted
     meta = Fmeta::Image.new(tempfile.path)
-    
+
     assert_equal("Director of Smiley Design", meta['AuthorsPosition'])
     assert_equal(metadata_date.to_s, meta['MetadataDate'].to_s)
     assert_equal(nil, meta['Caption-Abstract'])

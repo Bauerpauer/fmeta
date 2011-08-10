@@ -1,7 +1,7 @@
 require "set"
 
 module Fmeta
-  
+
   class Image
 
     def initialize(path)
@@ -9,13 +9,13 @@ module Fmeta
       @reader = Exiftool::Reader.new(@path)
       @tags = Set.new
     end
-    
+
     def tags
       load_all_tags
 
       @tags
     end
-    
+
     ##
     # Removes metadata from any tag that doesn't match one of the exceptions.
     ##
@@ -46,7 +46,7 @@ module Fmeta
       tag = load_tag(key)
       tag ? tag.value : nil
     end
-    
+
     def []=(key, value)
       tag = load_tag(key)
       tag.value = value
@@ -61,18 +61,18 @@ module Fmeta
     end
 
     private
-    
+
     def load_all_tags
       return if @all_tags_loaded
       # Preload all available tags, only adding new keys
       @reader.read_all.each { |tag| @tags.add?(tag) }
-      
+
       @all_tags_loaded = true
     end
 
     def save_meta
       writer = Exiftool::Writer.new(@path)
-      
+
       dirty_tags = @tags.select { |t| t.dirty? }
       writer.write(dirty_tags)
       dirty_tags.each { |tag| tag.commit }
@@ -81,7 +81,7 @@ module Fmeta
     def load_tag(key)
       category, key = Tag::split(key)
 
-      tag = if category        
+      tag = if category
         tags.detect { |t| t.category == category && t.name == key }
       else
         tags.detect { |t| t.name == key }

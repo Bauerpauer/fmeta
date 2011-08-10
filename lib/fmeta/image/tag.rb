@@ -1,5 +1,5 @@
 class Fmeta::Image::Tag
-  
+
   class UnknownTagFuzzyComparison < StandardError
 
     def initialize(comparator)
@@ -7,7 +7,7 @@ class Fmeta::Image::Tag
     end
 
   end
-  
+
   def self.split(key)
     key =~ /((.*):)?(.*)/
     [$2, $3] # category, key
@@ -18,9 +18,10 @@ class Fmeta::Image::Tag
 
   def initialize(category, name, value)
     @category, @name, @value = category, name, value
+    @previous_value = @value
     @dirty = false
   end
-  
+
   def value
     @value
   end
@@ -33,7 +34,7 @@ class Fmeta::Image::Tag
     @dirty = true
     @value = new_value
   end
-  
+
   def commit
     @previous_value = nil
     @dirty = false
@@ -43,11 +44,11 @@ class Fmeta::Image::Tag
     @dirty = false
     @value = @previous_value
   end
-  
+
   def eql?(other)
     self.category == other.category && self.name == other.name
   end
-  
+
   def =~(other)
     case other
     when String
@@ -65,7 +66,7 @@ class Fmeta::Image::Tag
       end
     end
   end
-  
+
   def to_s
     "<Fmeta::Image::Tag #{category}:#{name}[#{value}]>"
   end

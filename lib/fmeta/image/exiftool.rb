@@ -4,22 +4,22 @@ require "shellwords"
 require "date"
 
 class Fmeta::Image
-  
+
   module Exiftool
 
     MINIMUM_EXIFTOOL_VERSION = '7.86'
-  
+
     ##
     # Responsible for the execution of exiftool commands
     ##
     class Shell
-      
+
       class ExecutionError < StandardError
         def initialize(command, status, error_messages)
           super("Exiftool Command failed: #{command}\nExit Status: #{status}\nMessages: #{error_messages}")
         end
       end
-      
+
       ##
       # Execute an exiftool command, return stdout, or raise an ExecutionError if the exitstatus
       # was not 0
@@ -30,12 +30,12 @@ class Fmeta::Image
         output = `#{command} 2>#{Shellwords.escape(error_file.path)}`
         if (status = $?) && status.exitstatus != 0
           error_messages = nil
-      
+
           if File.file?(error_file.path)
-            error_messages = File.read(error_file.path) 
+            error_messages = File.read(error_file.path)
             FileUtils.rm(error_file.path)
           end
-      
+
           raise ExecutionError.new(command, status.exitstatus, error_messages)
         end
 
@@ -43,7 +43,7 @@ class Fmeta::Image
 
         output
       end
-      
+
     end
 
     ##
@@ -61,10 +61,10 @@ class Fmeta::Image
         warn "You need to install exiftool: http://www.sno.phy.queensu.ca/~phil/exiftool/"
         return false
       end
-    
+
       true
     end
-  
+
     ##
     # Reads image metadata and returns instances of Fmeta::Image::Tag
     ##
@@ -72,11 +72,11 @@ class Fmeta::Image
 
       EXIFTOOL_COMMAND = %q{exiftool -a -q -q -s -t -G}
       DATE_FORMAT_REGEXP = /^((\d{4}):(\d\d):(\d\d) (\d\d):(\d\d):(\d\d))($|(\+|\-)\d\d:\d\d)/
-  
+
       def initialize(path)
         @path = path
       end
-      
+
       def read_all
         read_tags
       end
@@ -87,7 +87,7 @@ class Fmeta::Image
         command = "#{EXIFTOOL_COMMAND} #{Shellwords.escape(@path)}"
 
         output = ::Fmeta::Image::Exiftool::Shell.run(command)
-        
+
         tags = []
         scanner = StringScanner.new(output)
 
@@ -98,7 +98,7 @@ class Fmeta::Image
 
           tags << ::Fmeta::Image::Tag.new(category, name, value)
         end
-    
+
         tags
       end
 
@@ -114,35 +114,35 @@ class Fmeta::Image
       end
 
     end
-    
+
     ##
     # Writes tag values back to an image
     ##
     class Writer
-      
+
       class WriteError < StandardError
         def initialize(path)
           super("Couldn't find temp file #{path} after successful execution.")
         end
       end
-      
+
       EXIFTOOL_COMMAND = %q{exiftool}
-      
+
       def initialize(path)
         @path = path
       end
-      
+
       def write(tags)
         tempfile = Tempfile.new('fmeta')
         FileUtils.cp(@path, tempfile.path)
-        
+
         tag_parameters = tags.map do |tag|
           "-#{tag.category ? "#{tag.category}:" : nil}#{tag.name}=#{Shellwords.escape(exiftool_writable_tag_value(tag))}"
         end.join(' ')
 
         error_file = Tempfile.new('fmeta')
         command = "#{EXIFTOOL_COMMAND} #{tag_parameters} #{Shellwords.escape(tempfile.path)} 2>#{Shellwords.escape(error_file.path)}"
-        
+
         begin
           ::Fmeta::Image::Exiftool::Shell.run(command)
         rescue
@@ -155,12 +155,12 @@ class Fmeta::Image
         else
           raise Exiftool::Writer::WriteError.new(tempfile.path)
         end
-        
+
         true
       end
-      
+
       private
-      
+
       ##
       # Converts a tag's value into something that exiftool can accept on the command line.
       ##
@@ -176,5 +176,5 @@ class Fmeta::Image
     end
 
   end
-  
+
 end
